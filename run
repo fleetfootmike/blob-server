@@ -1,7 +1,7 @@
 #!/bin/bash
 export ROOT=$PWD
 export LOGS_DIR=$PWD/log
-export BLOB_DIR=$PWD/blobs
+export BLOB_DIR=$PWD/blob
 export EMPTY_DIR=$PWD/empty
 export TMP_DIR=$PWD/tmp
 mkdir -p $EMPTY_DIR $LOGS_DIR $BLOB_DIR $TMP_DIR
