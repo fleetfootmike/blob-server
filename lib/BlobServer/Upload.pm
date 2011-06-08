@@ -37,7 +37,7 @@ sub handler {
 	return $status if $status;
 
 	$r->status(HTTP_CREATED);
-	$r->headers_out->set("Location", "http://127.0.0.1:8080/blob/$checksum");
+	$r->headers_out->set("Location", blob_uri($r)."/$checksum");
 	$r->content_type("text/plain");
 	$r->print("$checksum\n");
 
@@ -81,6 +81,21 @@ sub store {
 	$r->content_type("text/plain");
 	$r->print("Error: $err\n");
 	return (undef, HTTP_INTERNAL_SERVER_ERROR);
+}
+
+sub blob_uri {
+	my ($r) = @_;
+
+	my $uri = "//".$r->headers_in->get("Host");
+	my $is_tls = $r->subprocess_env("HTTPS");
+	$uri = ($is_tls ? "https:" : "http:") . $uri;
+	$uri .= $r->uri;
+
+	print STDERR "uri=$uri\n";
+
+	$uri =~ s{/upload$}{};
+
+	return $uri;
 }
 
 1;
