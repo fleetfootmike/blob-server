@@ -8,6 +8,7 @@ package BlobServer::Upload;
 
 use Apache2::Const qw(
 	HTTP_METHOD_NOT_ALLOWED
+	HTTP_FORBIDDEN
 	HTTP_CREATED
 	OK
 	HTTP_INTERNAL_SERVER_ERROR
@@ -25,6 +26,9 @@ sub handler {
 
 	return HTTP_METHOD_NOT_ALLOWED
 		unless $r->method eq "POST";
+
+	return HTTP_FORBIDDEN
+		if $r->headers_in->get("Content-Type") =~ m{^multipart/}i;
 
 	# TODO reject if multipart or form-data
 	# (just to stop the common errors)
