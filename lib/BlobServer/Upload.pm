@@ -32,9 +32,6 @@ sub handler {
 	return HTTP_FORBIDDEN
 		if $r->headers_in->get("Content-Type") =~ m{^multipart/}i;
 
-	# TODO reject if multipart or form-data
-	# (just to stop the common errors)
-
 	my ($checksum, $status) = store($r);
 	return $status if $status;
 
