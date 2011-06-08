@@ -17,6 +17,8 @@ use Apache2::RequestRec;
 use Apache2::Response;
 use Apache2::RequestIO;
 use APR::Table;
+use Apache2::Log;
+use Apache2::ServerUtil;
 
 use File::Temp 'tempfile';
 use Digest::SHA1;
@@ -77,10 +79,15 @@ sub store {
 
 	my $err = $!;
 	unlink $name if defined $name;
-	print STDERR "Error: $err\n";
+
+	my $s = Apache2::ServerUtil->server;
+	$s->log_error("Error storing blob: $err");
+
+	$r->status(HTTP_INTERNAL_SERVER_ERROR);
 	$r->content_type("text/plain");
 	$r->print("Error: $err\n");
-	return (undef, HTTP_INTERNAL_SERVER_ERROR);
+
+	return (undef, OK);
 }
 
 sub blob_uri {
@@ -90,8 +97,6 @@ sub blob_uri {
 	my $is_tls = $r->subprocess_env("HTTPS");
 	$uri = ($is_tls ? "https:" : "http:") . $uri;
 	$uri .= $r->uri;
-
-	print STDERR "uri=$uri\n";
 
 	$uri =~ s{/upload$}{};
 
