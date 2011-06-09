@@ -26,8 +26,10 @@ use Digest::SHA1;
 sub handler {
 	my ($r) = @_;
 
-	return HTTP_METHOD_NOT_ALLOWED
-		unless $r->method eq "POST";
+	if ($r->method ne "POST") {
+                $r->headers_out->set("Allow", "POST");
+                return HTTP_METHOD_NOT_ALLOWED;
+        }
 
 	return HTTP_FORBIDDEN
 		if $r->headers_in->get("Content-Type") =~ m{^multipart/}i;
